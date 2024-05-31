@@ -8,7 +8,7 @@ MAX_COLOR_BITS = 3
 MAX_COLOR_BYTES = pow(2, MAX_COLOR_BITS) - 1
 MAX_COLOR_VALUE = pow(2, 8 * MAX_COLOR_BYTES) - 1
 
-with open('data_horiz.json', 'r') as file:
+with open('data_vert.json', 'r') as file:
 	video_json = json.load(file)
 metadata = video_json['metadata']
 
@@ -84,7 +84,7 @@ def calculate_optimal(name, spread, bit_multiplier=1):
 		if optimal_used == 0 or optimal_used > used:
 			optimal = count
 			optimal_used = used
-		print('%s used if max color bytes is %i %s' % (name, count, name), used)
+		print('%s used if max color is %i %s' % (name, count, name), used)
 	print('optimal %s:' % (name), optimal)
 	return optimal
 
@@ -92,7 +92,7 @@ def calculate_optimal(name, spread, bit_multiplier=1):
 optimal_bit_size = calculate_optimal('bits', bit_spread)
 optimal_byte_size = calculate_optimal('bytes', byte_spread, 8)
 
-with open('badapple.bin', 'wb') as out:
+with open('badapple_vert.bin', 'wb') as out:
 	# Current File Header
 	# bytes per dimension = 3 bits
 	# bytes per color-count = 3 bits
@@ -106,7 +106,7 @@ with open('badapple.bin', 'wb') as out:
 	# FRAME DATA:
 	# IF per-frame first color, define now (1 or 0) = 1 byte
 	# length of color (either first color or black) [repeat until end of frame]
-	for i,frame in enumerate(badapple['data']):
+	for i,frame in enumerate(video_json['data']):
 		#print('processing frame %i' % i)
 		out.write(frame[0].to_bytes(1, 'big'))
 		for num in frame[1:]:
