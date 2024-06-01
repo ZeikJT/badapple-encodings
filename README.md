@@ -9,13 +9,15 @@ Next step is to create a decoder to play the video file I made. We'll see how th
 Current byte-aligned file format:
 ```
 File Header
-bytes per dimension = 3 bits
-bytes per color-count = 3 bits
-whether constant first color (1) or per-frame (0) = 1 bit
-constant first color, or ignored = 1 bit (with 1 byte color-size they're essentially equivalent)
-width dimension
-height dimension
+  bytes per dimension = 3 bits
+  bytes per color (if 0 do per-frame) = 3 bits
+  whether constant first color (1) or per-frame (0) = 1 bit [note that per frame starts with black]
+  constant first color, or ignored = 1 bit
+  width dimension
+  height dimension
+  frame rate = 1 byte
 REPEATING FRAME DATA:
-IF per-frame first color, define now (1 or 0) = 1 byte
-length of color (either first color or black) [repeat until end of frame]
+  IF per-frame byte per color, define now = 1 byte
+  IF per-frame first color, define now (1 or 0) = 1 byte
+  length of color (either first color or black) [repeat until end of frame]
 ```

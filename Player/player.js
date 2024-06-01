@@ -25,17 +25,27 @@ function uintFromBigEndian(uint8array, start, end) {
     return num
 }
 
-async function getByteReader(path) {
+async function getByteReader(path, loop = true) {
     const video_data = new Uint8Array(await fetch(path).then((response) => response.arrayBuffer()))
-    let readIndex = 0;
+    let readIndex = 0
+    let dataStart = 0
     function read(byte_count) {
+        if (readIndex === video_data.length) {
+            if (!loop) {
+                throw new Error('reading past end of file, and looping not enabled')
+            }
+            readIndex = dataStart
+        }
         if (byte_count == 0) throw new Error('trying to read 0 bytes?')
         if (byte_count == 1) {
             return video_data[readIndex++]
         }
         return uintFromBigEndian(video_data, readIndex, readIndex += byte_count)
     }
-    return read
+    function markDataStart() {
+        dataStart = readIndex
+    }
+    return [read, markDataStart]
 }
 
 const WHITE = '#FFF'
@@ -46,7 +56,7 @@ const COLOR_MAP = [
 ]
 
 ;(async function() {
-    const read = await getByteReader('badapple_horiz.bin')
+    const [read, markDataStart] = await getByteReader('badapple_horiz.bin', /* loop= */ true)
     const header = read(1)
     const dimension_size = header >> 5
     const fixed_color_size = (header >> 2) & 0b111
@@ -55,6 +65,7 @@ const COLOR_MAP = [
     const width = read(dimension_size)
     const height = read(dimension_size)
     const fps = read(1)
+    markDataStart();
     //console.log(dimension_size, fixed_color_size, is_fixed_bg_color, fixed_bg_color, width, height, fps)
     const canvasElement = document.createElement('canvas')
     canvasElement.setAttribute('width', width)
