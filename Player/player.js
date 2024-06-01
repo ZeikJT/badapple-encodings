@@ -82,22 +82,34 @@ const COLOR_MAP = [
         const color_byte_size = fixed_color_size || read(1)
         let x = 0
         let y = 0
+        const bg = colorIndex
+        canvas2d.fillStyle = COLOR_MAP[bg]
+        canvas2d.fillRect(0, 0, width, height)
         do {
             canvas2d.fillStyle = COLOR_MAP[colorIndex]
             let pixels = read(color_byte_size)
-            while (x + pixels > width) {
-                canvas2d.fillRect(x, y, width - x, 1)
-                pixels -= width - x
-                x = 0
-                y += 1
-            }
-            if (pixels) {
-                canvas2d.fillRect(x, y, pixels, 1)
-                x += pixels
-                if (x === width) {
+            if (colorIndex !== bg) {
+                while (x + pixels > width) {
+                    canvas2d.fillRect(x, y, width - x, 1)
+                    pixels -= width - x
                     x = 0
                     y += 1
                 }
+                if (pixels) {
+                    if (colorIndex !== bg) {
+                        canvas2d.fillRect(x, y, pixels, 1)
+                    }
+                    x += pixels
+                    if (x === width) {
+                        x = 0
+                        y += 1
+                    }
+                }
+            } else {
+                // For the non-drawing case (bg matches color we'd be drawing), just advance x and y
+                x += pixels
+                y += Math.floor(x / width)
+                x %= width
             }
             colorIndex = 1 - colorIndex
         } while (y < height)
