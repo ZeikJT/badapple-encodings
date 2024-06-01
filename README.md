@@ -21,3 +21,5 @@ REPEATING FRAME DATA:
   IF per-frame first color, define now (1 or 0) = 1 byte
   length of color (either first color or black) [repeat until end of frame]
 ```
+
+I used the video from https://archive.org/details/bad-apple-pv_202307 as the basis for my encoding since it's as close to the original as I wanted. It's 512x384 and at 30fps, it is also a decently chunk encoding so there's savings to be had.
