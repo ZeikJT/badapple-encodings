@@ -1,9 +1,10 @@
 import imageio_ffmpeg
 import json
+import sys
 
 COLOR_VALUE_THRESHOLD = (255 * 3) / 2
 
-vid = imageio_ffmpeg.read_frames('BadApple-niconico-rot.m4a')
+vid = imageio_ffmpeg.read_frames(sys.argv[1])
 
 frames = []
 
@@ -15,6 +16,7 @@ metadata = next(vid_generator)
 print(metadata[1])
 width = metadata[1]['size'][0]
 height = metadata[1]['size'][1]
+fps = metadata[1]['fps']
 
 total_solid_frames = 0
 
@@ -37,5 +39,5 @@ for i, im in vid_generator:
 		total_solid_frames += 1
 	print('processed frame %i, %r' % (i, is_solid_frame))
 print('solid: %i' % total_solid_frames)
-with open('data_vert.json', 'w') as f:
-	json.dump({'metadata': {'w': width, 'h': height}, 'data': frames}, f)
+with open(sys.argv[1] or 'data.json', 'w') as f:
+	json.dump({'metadata': {'w': width, 'h': height, 'fps': fps}, 'data': frames}, f)
