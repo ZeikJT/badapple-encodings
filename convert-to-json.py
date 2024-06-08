@@ -39,5 +39,5 @@ for i, im in vid_generator:
         total_solid_frames += 1
     print('processed frame %i, %r' % (i, is_solid_frame))
 print('solid: %i' % total_solid_frames)
-with open(sys.argv[1] or 'data.json', 'w') as f:
+with open(sys.argv[2] or 'data.json', 'w') as f:
     json.dump({'metadata': {'w': width, 'h': height, 'fps': fps}, 'data': frames}, f)
